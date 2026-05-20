@@ -1,25 +1,84 @@
-# Patches, weights, raw data — all on Google Drive
+# ── Training artefacts (hosted on Google Drive) ───────────────────────
+patches/
 patches_*/
+checkpoints/
 checkpoints_*/
+results/
 results_*/
+inference/
 inference_*/
+weights/
+
+# ── Raw data (hosted on Google Drive) ─────────────────────────────────
 CoralNet_Data/
-sam2/                    # cloned SAM2 repo
-mobile_sam/              # MobileSAM weights/code
+*.zip
+
+# ── External repos (cloned at install time) ───────────────────────────
+external/
+sam2/
+mobile_sam/
+MobileSAM/
+CoralSCOP/
+
+# ── Model weight files anywhere ───────────────────────────────────────
 *.pt
 *.pth
+*.ckpt
+*.safetensors
 
-# Standard Python
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-venv/
-.env
-
-# Training logs
+# ── Training logs ─────────────────────────────────────────────────────
 *.log
 nohup.out
+training_log*
 
-# OS
+# ── Checkpoints generated during extraction ───────────────────────────
+extraction_checkpoint.json
+split_manifest.csv
+
+# ── Python ────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+.installed.cfg
+dist/
+build/
+
+# ── Virtual environments ──────────────────────────────────────────────
+venv/
+.venv/
+env/
+.env
+
+# ── Jupyter ───────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── IDE ───────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# ── LaTeX build artefacts ─────────────────────────────────────────────
+docs/*.aux
+docs/*.log
+docs/*.toc
+docs/*.out
+docs/*.bbl
+docs/*.blg
+docs/*.synctex.gz
+docs/*.fls
+docs/*.fdb_latexmk
+
+# ── Notebooks: keep .ipynb but ignore outputs ─────────────────────────
+# (use nbstripout or jupyter nbconvert --clear-output before committing)
