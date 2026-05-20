@@ -46,7 +46,6 @@ caribbean-coral-classification/
 |
 ├── docs/
 |   ├── report.pdf                     # Independent study report
-|   ├── report.tex                     # LaTeX source for the report
 |   └── results/
 |       ├── confusion_matrix.png       # Final model confusion matrix
 |       ├── training_curves.png        # Loss + F1 curves
@@ -72,9 +71,6 @@ caribbean-coral-classification/
 ├── tools/
 |   └── label_tool.py                  # Tkinter GUI for manual labelling
 |
-├── examples/
-|   ├── sample_input.jpg               # Example test image
-|   └── sample_output_overlay.jpg      # Example model output
 |
 ├── data/                              # Not committed; user downloads locally
 ├── models/                            # Not committed; user downloads locally
