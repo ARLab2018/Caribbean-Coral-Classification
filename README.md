@@ -355,7 +355,7 @@ If you use this code or pipeline, please cite:
   title        = {Automated Species-Level Classification of Caribbean Coral Reefs: A SAM 2 Segmentation and EfficientNet-B3 Pipeline},
   year         = {2026},
   howpublished = {Independent study report},
-  url          = {https://github.com/YOUR-USERNAME/caribbean-coral-classification}
+  url          = {https://github.com/ARLab2018/Caribbean-Coral-Classification}
 }
 ```
 
