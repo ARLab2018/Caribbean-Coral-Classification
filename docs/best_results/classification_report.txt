@@ -1,0 +1,26 @@
+Test accuracy  : 0.7257
+Test macro-F1  : 0.6237
+
+                           precision    recall  f1-score   support
+
+      Acropora_tenuifolia      0.441     0.638     0.522       130
+      Agaricia_agaricites      0.826     0.718     0.768      1371
+      Colpophyllia_natans      0.736     0.683     0.709       322
+          Lobophyllia_spp      0.737     0.730     0.734      1072
+       Madracis_auretenra      0.527     0.481     0.503       264
+       Madracis_mirabilis      0.911     0.855     0.882      1479
+     Meandrina_meandrites      0.336     0.671     0.447        73
+            Millepora_spp      0.676     0.690     0.683       542
+    Montastraea_cavernosa      0.668     0.722     0.694       479
+      Orbicella_annularis      0.834     0.757     0.794      1385
+      Orbicella_faveolata      0.739     0.669     0.703      1209
+        Orbicella_franksi      0.145     0.322     0.200        90
+       Porites_astreoides      0.697     0.734     0.715       593
+          Porites_porites      0.330     0.622     0.431       111
+  Pseudodiploria_strigosa      0.542     0.625     0.580       208
+      Siderastrea_siderea      0.727     0.828     0.774       408
+Stephanocoenia_intersepta      0.396     0.559     0.464       143
+
+                 accuracy                          0.726      9879
+                macro avg      0.604     0.665     0.624      9879
+             weighted avg      0.748     0.726     0.734      9879
