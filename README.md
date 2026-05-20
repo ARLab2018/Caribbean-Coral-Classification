@@ -1,6 +1,6 @@
 # Caribbean Coral Reef Species Classification
 
-End-to-end deep learning pipeline for detecting and classifying **17 Caribbean coral species** from underwater photoquadrat images. Combines **SAM 2** (Segment Anything Model 2) for instance-level coral colony segmentation with a fine-tuned **EfficientNet-B3** classifier.
+End-to-end deep learning pipeline for detecting and classifying **17 Caribbean coral species** from underwater photoquadrat images. The project combines instance-level coral colony segmentation using **SAM 2**, **MobileSAM**, and **CoralSCOP** with a fine-tuned **EfficientNet-B3** classifier.
 
 Independent study project — full report in [`docs/report.pdf`](docs/report.pdf).
 
@@ -8,204 +8,364 @@ Independent study project — full report in [`docs/report.pdf`](docs/report.pdf
 
 ## Results
 
-Four pipelines were trained and evaluated on the same image-level held-out test set (9,879 patches across 17 species).
+All completed experiments were evaluated using an image-level held-out test split across 17 coral species. The best-performing pipeline was **SAM 2 + EfficientNet-B3**, which produced cleaner colony masks and the highest macro-F1 score.
 
-| # | Segmenter | Classifier | Patches | Accuracy | Macro-F1 |
-|---|-----------|------------|---------|----------|----------|
+| # | Segmenter | Classifier | Training patches | Accuracy | Macro-F1 |
+|---|-----------|------------|------------------|----------|----------|
 | 1 | MobileSAM | EfficientNet-B3 | 49,850 | 70.1% | 0.606 |
-| 2 | **SAM 2** | **EfficientNet-B3** | **43,672** | **72.6%** | **0.624** ← best |
+| 2 | CoralSCOP | EfficientNet-B3 | See report | See report | See report |
+| 3 | **SAM 2** | **EfficientNet-B3** | **43,672** | **72.6%** | **0.624** |
 | 4 | SAM 2 | DINOv2-S | 43,672 | 46.8% | 0.376 |
 
-\* CoralSCOP frozen-encoder fine-tuning did not converge to a usable classifier; details in the report.
-
-Switching the segmenter from MobileSAM to SAM 2 improved macro-F1 by **+0.018** despite training on roughly 6,000 fewer patches — cleaner masks more than offset the smaller dataset. DINOv2-S underperformed because zeroed-background masked crops are out-of-distribution for its self-supervised pretraining.
+Switching from MobileSAM to SAM 2 improved macro-F1 by **+0.018**, even though the SAM 2 dataset had fewer patches. The improvement came from cleaner segmentation masks and fewer fragmented colonies. DINOv2-S underperformed on the zero-background masked crops, likely because those crops are out-of-distribution for the self-supervised backbone.
 
 ### Per-species highlights
 
 | Species | F1 | Test n |
-|---|---|---|
+|---|---:|---:|
 | *Madracis mirabilis* | 0.882 | 1,479 |
 | *Orbicella annularis* | 0.794 | 1,385 |
 | *Siderastrea siderea* | 0.774 | 408 |
 | *Agaricia agaricites* | 0.768 | 1,371 |
-| ... | ... | ... |
 | *Porites porites* | 0.431 | 111 |
 | *Orbicella franksi* | 0.200 | 90 |
 
-Full per-species table in the [report](docs/report.pdf).
+Full results, confusion matrix discussion, and failure cases are included in the [report](docs/report.pdf).
 
 ---
 
 ## Repository layout
 
-```
-src/
-├── data/build_manifest.py          # Build split_manifest.csv from CoralNet
-├── patches/
-│   ├── extract_mobilesam.py        # Pipeline 1: MobileSAM masked crops
-│   ├── extract_coralscop.py        # Pipeline 2: CoralSCOP masked crops
-│   └── extract_sam2.py             # Pipelines 3 & 4: SAM2 point-prompt crops
-├── train.py                        # Trains EfficientNet-B3 or DINOv2-S
-└── inference/
-    ├── infer_mobilesam_effnet.py
-    ├── infer_coralscop_effnet.py
-    ├── infer_sam2_effnet.py        # Best model
-    └── infer_sam2_dinov2.py
-tools/
-└── label_tool.py                   # Tkinter GUI for manual labelling
-docs/
-├── report.pdf                      # Full independent study report
-└── report.tex                      # LaTeX source
-examples/
-├── sample_input.jpg
-└── sample_output_overlay.jpg
+```text
+caribbean-coral-classification/
+|
+├── README.md                          # Project overview, results, install, usage
+├── LICENSE                            # MIT license for code
+├── .gitignore                         # Ignores data, model weights, outputs
+├── requirements.txt                   # Python dependencies
+|
+├── docs/
+|   ├── report.pdf                     # Independent study report
+|   ├── report.tex                     # LaTeX source for the report
+|   └── results/
+|       ├── confusion_matrix.png       # Final model confusion matrix
+|       ├── training_curves.png        # Loss + F1 curves
+|       └── sample_inference.jpg       # Example overlay output
+|
+├── src/
+|   ├── data/
+|   |   └── build_manifest.py          # Build split_manifest.csv from CoralNet annotations
+|   |
+|   ├── patches/
+|   |   ├── extract_mobilesam.py       # Pipeline 1: MobileSAM masked crops
+|   |   ├── extract_coralscop.py       # Pipeline 2: CoralSCOP masked crops
+|   |   └── extract_sam2.py            # Pipelines 3 & 4: SAM2 point-prompt crops
+|   |
+|   ├── train.py                       # Train EfficientNet-B3 or DINOv2-S classifier
+|   |
+|   └── inference/
+|       ├── infer_mobilesam_effnet.py  # Pipeline 1 inference
+|       ├── infer_coralscop_effnet.py  # Pipeline 2 inference
+|       ├── infer_sam2_effnet.py       # Pipeline 3 inference, best model
+|       └── infer_sam2_dinov2.py       # Pipeline 4 inference, ablation
+|
+├── tools/
+|   └── label_tool.py                  # Tkinter GUI for manual labelling
+|
+├── examples/
+|   ├── sample_input.jpg               # Example test image
+|   └── sample_output_overlay.jpg      # Example model output
+|
+├── data/                              # Not committed; user downloads locally
+├── models/                            # Not committed; user downloads locally
+├── outputs/                           # Not committed; generated locally
+└── external/                          # Not committed; external repos such as SAM2
 ```
 
 ---
 
-## External assets
+## External files required
 
-The repository contains code only. Trained model weights, source images, and patches are too large to host on GitHub.
+This repository contains **code, documentation, and small examples only**. Large files are hosted externally and must be downloaded separately.
 
-| Asset | Size | Location |
-|---|---|---|
-| Trained model checkpoints (4 pipelines) | ~600 MB | [Google Drive](TODO: paste link here) |
-| Source images from 8 CoralNet sources | ~12 GB | [Google Drive](TODO: paste link here) |
-| Generated training patches (SAM 2) | ~5 GB | [Google Drive](TODO: paste link here) |
-| SAM 2 base weights | 308 MB | [Meta AI](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt) |
-| MobileSAM weights | 38 MB | [MobileSAM repo](https://github.com/ChaoningZhang/MobileSAM/raw/master/weights/mobile_sam.pt) |
-| CoralSCOP weights | 350 MB | [CoralSCOP project](https://coralscop.hkustvgd.com) |
+After cloning the repo, create the following local folders and place the downloaded files exactly as shown:
+
+```text
+caribbean-coral-classification/
+|
+├── data/
+|   └── CoralNet_Data/                 # Downloaded CoralNet sources
+|
+├── models/
+|   ├── mobile_sam.pt                  # MobileSAM segmentation weights
+|   ├── vit_b_coralscop.pth            # CoralSCOP segmentation weights
+|   ├── sam2.1_hiera_base_plus.pt      # SAM2 base weights
+|   |
+|   ├── checkpoints_option_a/
+|   |   └── best_model.pt              # MobileSAM + EfficientNet-B3 classifier
+|   |
+|   ├── checkpoints_option_f/
+|   |   └── best_model.pt              # Option F trained classifier, if used
+|   |
+|   ├── checkpoints_sam2/
+|   |   └── best_model.pt              # SAM2 + EfficientNet-B3 best classifier
+|   |
+|   └── checkpoints_sam2_dinov2_s/
+|       └── best_model.pt              # SAM2 + DINOv2-S ablation checkpoint
+|
+└── outputs/
+    ├── split_manifest.csv             # Generated by src/data/build_manifest.py
+    ├── patches_option_a/              # Generated MobileSAM masked patches
+    ├── patches_option_f/              # Generated bbox patches
+    └── patches_sam2/                  # Generated SAM2 masked patches
+```
+
+| Asset | Approx. size | Where to get it |
+|---|---:|---|
+| Trained classifier checkpoints | ~600 MB | Google Drive: `TODO_ADD_LINK_HERE` |
+| Source CoralNet images and annotations | ~12 GB | Google Drive: `TODO_ADD_LINK_HERE` |
+| Generated training patches | ~5 GB | Google Drive: `TODO_ADD_LINK_HERE` |
+| SAM 2 base weights | ~308 MB | [Meta AI SAM2 weights](https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt) |
+| MobileSAM weights | ~38 MB | [MobileSAM weights](https://github.com/ChaoningZhang/MobileSAM/raw/master/weights/mobile_sam.pt) |
+| CoralSCOP weights | ~350 MB | [CoralSCOP project](https://coralscop.hkustvgd.com) |
+
+The `data/`, `models/`, `outputs/`, and `external/` folders should stay out of GitHub.
+
+Recommended `.gitignore` entries:
+
+```gitignore
+data/
+models/
+outputs/
+external/
+*.pt
+*.pth
+__pycache__/
+.DS_Store
+```
 
 ---
 
 ## Installation
 
-Tested on Ubuntu 22.04 with Python 3.10, CUDA 12.x, and an NVIDIA RTX 4060 (8 GB).
+Tested on Ubuntu 22.04 with Python 3.10, CUDA 12.x, and an NVIDIA GPU.
 
 ```bash
-# 1. Clone this repo
+# 1. Clone the repository
 git clone https://github.com/YOUR-USERNAME/caribbean-coral-classification.git
 cd caribbean-coral-classification
 
-# 2. Create environment
-conda create -n coral python=3.10
-conda activate coral
+# 2. Create and activate the environment
+conda create -n coralnet10 python=3.10 -y
+conda activate coralnet10
 
-# 3. Install dependencies
+# 3. Install Python dependencies
 pip install -r requirements.txt
 
-# 4. Install SAM 2 (required for pipelines 3 & 4)
+# 4. Install SAM2, required for the best pipeline
+mkdir -p external
 git clone https://github.com/facebookresearch/sam2.git external/sam2
-cd external/sam2 && pip install -e . && cd ../..
+pip install -e external/sam2
 
-# 5. Download segmentation weights
-mkdir -p weights
-wget -P weights https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_base_plus.pt
-wget -P weights https://github.com/ChaoningZhang/MobileSAM/raw/master/weights/mobile_sam.pt
+# 5. Create local folders for downloaded assets
+mkdir -p data models outputs
+mkdir -p models/checkpoints_option_a models/checkpoints_option_f
+mkdir -p models/checkpoints_sam2 models/checkpoints_sam2_dinov2_s
+```
 
-# 6. Download trained classifier weights from Google Drive
-# (link above) → place in checkpoints/
+Then download the externally hosted files and place them in the `models/` and `data/` folders following the structure above.
+
+---
+
+## Quickstart: run the best inference pipeline
+
+After placing the SAM2 weights and the trained EfficientNet-B3 checkpoint in `models/`, run:
+
+```bash
+python src/inference/infer_sam2_effnet.py \
+    --input examples/sample_input.jpg
+```
+
+By default, this script looks for:
+
+```text
+models/sam2.1_hiera_base_plus.pt
+models/checkpoints_sam2/best_model.pt
+```
+
+Outputs are saved to:
+
+```text
+outputs/inference/sam2_effnet/
+```
+
+Output files per image:
+
+- `<name>_overlay.jpg` — semi-transparent species overlay with labels
+- `<name>_species_map.jpg` — solid species-colour map
+- `<name>_label_map.png` — integer label map, where 0 = background and 1–17 = species
+- `<name>_results.json` — detections with species, confidence, bbox, and mask area
+- `summary.csv` — all detections across processed images
+
+To use custom file locations:
+
+```bash
+python src/inference/infer_sam2_effnet.py \
+    --input /path/to/reef_photo.jpg \
+    --output outputs/inference/my_run \
+    --sam2_weights models/sam2.1_hiera_base_plus.pt \
+    --clf_checkpoint models/checkpoints_sam2/best_model.pt
 ```
 
 ---
 
-## Quickstart — inference on your own image
+## Other inference pipelines
 
 ```bash
+# MobileSAM + EfficientNet-B3
+python src/inference/infer_mobilesam_effnet.py \
+    --input examples/sample_input.jpg
+
+# CoralSCOP + EfficientNet-B3
+python src/inference/infer_coralscop_effnet.py \
+    --input examples/sample_input.jpg
+
+# SAM2 + EfficientNet-B3, best pipeline
 python src/inference/infer_sam2_effnet.py \
-    --input path/to/reef_photo.jpg \
-    --output ./inference_output \
-    --sam2_weights weights/sam2.1_hiera_base_plus.pt \
-    --classifier checkpoints/sam2_effnet_best.pt
+    --input examples/sample_input.jpg
 ```
 
-Outputs per image:
-- `<name>_overlay.jpg` — semi-transparent species colour overlay
-- `<name>_species_map.jpg` — solid colour species map
-- `<name>_label_map.png` — integer label map (0 = background, 1–17 = species)
-- `<name>_results.json` — per-colony detections with confidence and bbox
-- `summary.csv` — collated across all processed images
+The scripts use repo-relative defaults, so they can be run from the repository root without hardcoded machine-specific paths.
 
 ---
 
 ## Reproducing the experiments
 
-### 1. Download and prepare CoralNet data
+### 1. Build the split manifest
+
+Place the CoralNet folders under `data/CoralNet_Data/`, then run:
 
 ```bash
-# Install CoralNet-Toolbox separately and use it to download these 8 sources:
-#   - Curaçao Coral Reef Assessment 2023
-#   - Curaçao Reef Assessment 2025
-#   - STINAPA GCRMN
-#   - MarineGEO RLS
-#   - LH CBC 2019-2022
-#   - Little Cayman MarineGEO
-#   - FSU_STINAPA
-#   - St. John 2016
-
-# Build the unified manifest
-python src/data/build_manifest.py
+python src/data/build_manifest.py \
+    --data-root data/CoralNet_Data \
+    --output-csv outputs/split_manifest.csv
 ```
+
+This creates:
+
+```text
+outputs/split_manifest.csv
+```
+
+The manifest contains image path, annotation row/column, species label, source name, and the image-level train/validation/test split.
 
 ### 2. Generate training patches
 
-```bash
-# Pipeline 3 (recommended): SAM 2 point-prompt extraction (~8-10 hours on RTX 4060)
-python src/patches/extract_sam2.py
-
-# Or compare with the baselines:
-python src/patches/extract_mobilesam.py
-python src/patches/extract_coralscop.py
-```
-
-### 3. Train
+Recommended SAM2 patch extraction:
 
 ```bash
-# Best pipeline
-python src/train.py --dataset sam2 --backbone efficientnet_b3
-
-# DINOv2 ablation
-python src/train.py --dataset sam2 --backbone dinov2_s
+python src/patches/extract_sam2.py \
+    --manifest outputs/split_manifest.csv \
+    --output-dir outputs/patches_sam2 \
+    --sam2-weights models/sam2.1_hiera_base_plus.pt
 ```
 
-Training takes ~6 hours on an RTX 4060 with early stopping (patience 12).
+MobileSAM baseline extraction:
+
+```bash
+python src/patches/extract_mobilesam.py \
+    --data-root data/CoralNet_Data \
+    --manifest outputs/split_manifest.csv \
+    --sam-checkpoint models/mobile_sam.pt \
+    --output-a outputs/patches_option_a \
+    --output-f outputs/patches_option_f
+```
+
+CoralSCOP extraction:
+
+```bash
+python src/patches/extract_coralscop.py \
+    --manifest outputs/split_manifest.csv \
+    --output-dir outputs/coralscop_training_data \
+    --weights models/vit_b_coralscop.pth
+```
+
+### 3. Train classifiers
+
+Best model:
+
+```bash
+python src/train.py \
+    --dataset sam2 \
+    --backbone efficientnet_b3 \
+    --patches-dir outputs/patches_sam2
+```
+
+DINOv2-S ablation:
+
+```bash
+python src/train.py \
+    --dataset sam2 \
+    --backbone dinov2_s \
+    --patches-dir outputs/patches_sam2
+```
+
+MobileSAM EfficientNet baseline:
+
+```bash
+python src/train.py \
+    --dataset option_a \
+    --backbone efficientnet_b3 \
+    --patches-dir outputs/patches_option_a
+```
+
+Training outputs are saved to:
+
+```text
+models/checkpoints_<run>/best_model.pt
+models/checkpoints_<run>/last_model.pt
+outputs/results_<run>/training_curves.png
+outputs/results_<run>/confusion_matrix.png
+outputs/results_<run>/classification_report.txt
+```
 
 ---
 
 ## Pipeline overview
 
-```
-Image
+```text
+Input reef image
   ↓
-SAM 2 automatic mask generator    ← instance segmentation
+SAM2 automatic mask generation
   ↓
-Per-colony masks + bboxes
+Coral colony masks + bounding boxes
   ↓
-Masked crop (zero background)     ← Option A style crop
+Masked crop extraction with zeroed background
   ↓
-EfficientNet-B3 classifier        ← species identification
+EfficientNet-B3 species classifier
   ↓
 Species label + confidence per colony
   ↓
-Not-coral rejection (conf < 0.45) ← filter substrate false positives
+Not-coral rejection threshold
   ↓
-Output: species map + JSON
+Species map, overlay image, label map, JSON, and summary CSV
 ```
 
-For training, the same SAM 2 model is used with **point prompts** (one prompt per CoralNet annotation point) rather than automatic mask generation. This guarantees each patch has a verified species label.
+For training, SAM2 is used with **point prompts** from CoralNet annotation points. This makes each extracted patch tied to a verified species label.
 
 ---
 
 ## Limitations
 
-The model is competent on common species but struggles on rare ones. Known failure modes:
+The model performs best on common coral species and struggles on rare or visually similar classes. Known failure modes include:
 
-- **Low-support species** (*Orbicella franksi*, *Meandrina meandrites*, *Porites porites*) — F1 below 0.45, partly from low annotation counts, partly from confusion with congeners.
-- **Colony fragmentation** — large encrusting colonies sometimes split into multiple sub-masks.
-- **False positives on substrate** — the not-coral confidence threshold catches most, not all.
-- **DINOv2 backbone fails on Option A crops** — distribution shift from zeroed background; would likely need natural-background crops to work.
+- **Low-support species** such as *Orbicella franksi*, *Meandrina meandrites*, and *Porites porites*.
+- **Confusion between related species**, especially visually similar congeners.
+- **Colony fragmentation**, where one large colony may be split into multiple masks.
+- **False positives on substrate**, although confidence-based not-coral rejection reduces many of them.
+- **DINOv2 distribution shift**, because zero-background masked crops are very different from the natural images used during pretraining.
 
-See the report's Discussion section for detailed analysis and proposed mitigations.
+See the report discussion for detailed error analysis and future improvements.
 
 ---
 
@@ -214,36 +374,29 @@ See the report's Discussion section for detailed analysis and proposed mitigatio
 If you use this code or pipeline, please cite:
 
 ```bibtex
-@misc{mitanshu2026coral,
+@misc{coral2026classification,
   author       = {Mitanshu Mothghare},
-  title        = {Automated Species-Level Classification of Caribbean Coral Reefs:
-                  A SAM 2 Segmentation and EfficientNet-B3 Pipeline},
+  title        = {Automated Species-Level Classification of Caribbean Coral Reefs: A SAM 2 Segmentation and EfficientNet-B3 Pipeline},
   year         = {2026},
   howpublished = {Independent study report},
   url          = {https://github.com/YOUR-USERNAME/caribbean-coral-classification}
 }
 ```
 
-Key upstream references (full list in the report):
-
-- Ravi, N., et al. (2024). *SAM 2: Segment Anything in Images and Videos.* arXiv:2408.00714
-- Tan, M., & Le, Q. V. (2019). *EfficientNet: Rethinking Model Scaling for CNNs.* ICML 2019
-- Zheng, Z., et al. (2024). *CoralSCOP: Segment any Coral Image on this Planet.* CVPR 2024
-- Wang, J., et al. (2025). *Multi-dataset-integrated Coral-Lab segmentation.* IJAEOG 143:104819
-- Beijbom, O., et al. (2015). *Towards Automated Annotation of Benthic Survey Images.* PLOS ONE
+Key upstream references are listed in the full report.
 
 ---
 
 ## Licence
 
-- **Code** in this repository: MIT (see [LICENSE](LICENSE)).
-- **CoralNet annotations** used for training: CC BY-NC 4.0 per CoralNet's terms.
+- **Code** in this repository: MIT, see [`LICENSE`](LICENSE).
+- **CoralNet annotations and source data** used for training: CC BY-NC 4.0, following CoralNet terms.
 - **Trained model weights**: CC BY-NC 4.0, consistent with the training data licence.
 
-Commercial use of the trained models is not permitted by the underlying data licence. Commercial use of the *code itself* is permitted under MIT.
+Commercial use of the trained models is not permitted by the underlying data licence. Commercial use of the code itself is permitted under MIT.
 
 ---
 
 ## Acknowledgements
 
-CoralNet data from eight publicly accessible sources. CoralNet-Toolbox by Jordan Pierce (NOAA). SAM 2 weights and code from Meta AI Research. This work was conducted as an independent study; see report for full acknowledgements.
+This project uses publicly accessible CoralNet sources, CoralNet-Toolbox, SAM2 from Meta AI Research, MobileSAM, and CoralSCOP. Full acknowledgements are included in the report.
