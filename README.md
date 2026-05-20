@@ -211,22 +211,6 @@ python src/inference/infer_sam2_effnet.py \
 
 ---
 
-## Other inference pipelines
-
-```bash
-# MobileSAM + EfficientNet-B3
-python src/inference/infer_mobilesam_effnet.py \
-    --input examples/sample_input.jpg
-
-# CoralSCOP + EfficientNet-B3
-python src/inference/infer_coralscop_effnet.py \
-    --input examples/sample_input.jpg
-
-# SAM2 + EfficientNet-B3, best pipeline
-python src/inference/infer_sam2_effnet.py \
-    --input examples/sample_input.jpg
-```
-
 The scripts use repo-relative defaults, so they can be run from the repository root without hardcoded machine-specific paths.
 
 ---
