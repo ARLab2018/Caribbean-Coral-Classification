@@ -13,8 +13,7 @@ Four pipelines were trained and evaluated on the same image-level held-out test 
 | # | Segmenter | Classifier | Patches | Accuracy | Macro-F1 |
 |---|-----------|------------|---------|----------|----------|
 | 1 | MobileSAM | EfficientNet-B3 | 49,850 | 70.1% | 0.606 |
-| 2 | CoralSCOP | EfficientNet-B3 | — | failed* | failed* |
-| 3 | **SAM 2** | **EfficientNet-B3** | **43,672** | **72.6%** | **0.624** ← best |
+| 2 | **SAM 2** | **EfficientNet-B3** | **43,672** | **72.6%** | **0.624** ← best |
 | 4 | SAM 2 | DINOv2-S | 43,672 | 46.8% | 0.376 |
 
 \* CoralSCOP frozen-encoder fine-tuning did not converge to a usable classifier; details in the report.
@@ -216,7 +215,7 @@ If you use this code or pipeline, please cite:
 
 ```bibtex
 @misc{mitanshu2026coral,
-  author       = {Mitanshu},
+  author       = {Mitanshu Mothghare},
   title        = {Automated Species-Level Classification of Caribbean Coral Reefs:
                   A SAM 2 Segmentation and EfficientNet-B3 Pipeline},
   year         = {2026},
