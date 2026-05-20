@@ -1,0 +1,25 @@
+# Patches, weights, raw data — all on Google Drive
+patches_*/
+checkpoints_*/
+results_*/
+inference_*/
+CoralNet_Data/
+sam2/                    # cloned SAM2 repo
+mobile_sam/              # MobileSAM weights/code
+*.pt
+*.pth
+
+# Standard Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.env
+
+# Training logs
+*.log
+nohup.out
+
+# OS
+.DS_Store
+Thumbs.db
