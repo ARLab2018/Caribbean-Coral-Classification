@@ -1,0 +1,37 @@
+# VLM fine-tuning requirements
+# Install with: pip install -r vlm/requirements_vlm.txt
+
+# Core Hugging Face stack
+transformers>=4.51.0
+datasets>=2.20.0
+accelerate>=0.30.0
+tokenizers>=0.19.0
+
+# Parameter-efficient fine-tuning (LoRA / QLoRA)
+peft>=0.11.0
+
+# Supervised fine-tuning trainer
+trl>=0.8.6
+
+# Quantization (4-bit / 8-bit QLoRA)
+bitsandbytes>=0.43.0
+
+# Image handling
+Pillow>=10.0.0
+# torchvision is required by Qwen2.5-VL's video processor sub-component
+# (loaded automatically by AutoProcessor even for image-only inference).
+# Install the version matching your PyTorch build:
+#   pip install torchvision
+# Or, if you have a custom/nightly PyTorch:
+#   pip install torchvision --index-url https://download.pytorch.org/whl/cu124
+torchvision
+
+# Data processing
+pandas>=2.0.0
+tqdm>=4.66.0
+
+# Optional: experiment tracking
+# wandb>=0.17.0
+
+# Optional: Flash Attention 2 for faster training on Ampere+ GPUs
+# pip install flash-attn --no-build-isolation

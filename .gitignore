@@ -1,84 +1,53 @@
-# ── Training artefacts (hosted on Google Drive) ───────────────────────
-patches/
-patches_*/
-checkpoints/
-checkpoints_*/
-results/
-results_*/
-inference/
-inference_*/
-weights/
-
-# ── Raw data (hosted on Google Drive) ─────────────────────────────────
-CoralNet_Data/
-*.zip
-
-# ── External repos (cloned at install time) ───────────────────────────
-external/
-sam2/
-mobile_sam/
-MobileSAM/
-CoralSCOP/
-
-# ── Model weight files anywhere ───────────────────────────────────────
+# ── Large binary model weights ─────────────────────────────────────────────────
 *.pt
 *.pth
-*.ckpt
+*.onnx
+*.bin
 *.safetensors
 
-# ── Training logs ─────────────────────────────────────────────────────
-*.log
-nohup.out
-training_log*
+# ── Dataset / output directories (too large for git) ───────────────────────────
+vlm_crops/
+vlm_checkpoints/
+CoralNet_Data/
+patches_option_*/
+checkpoints_*/
+inference_*/
+results_*/
 
-# ── Checkpoints generated during extraction ───────────────────────────
-extraction_checkpoint.json
-split_manifest.csv
-
-# ── Python ────────────────────────────────────────────────────────────
+# ── Python ─────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
+*.pyo
 *.egg-info/
-*.egg
-.installed.cfg
+.eggs/
 dist/
 build/
+*.so
 
-# ── Virtual environments ──────────────────────────────────────────────
+# ── Environments ───────────────────────────────────────────────────────────────
+.env
+*.env
 venv/
 .venv/
-env/
-.env
 
-# ── Jupyter ───────────────────────────────────────────────────────────
+# ── Jupyter / IPython ──────────────────────────────────────────────────────────
 .ipynb_checkpoints/
-*.ipynb_checkpoints
+*.ipynb
 
-# ── IDE ───────────────────────────────────────────────────────────────
+# ── IDE / OS ───────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
+*.DS_Store
+.claude/
 
-# ── OS ────────────────────────────────────────────────────────────────
-.DS_Store
-Thumbs.db
-desktop.ini
+# ── Logs & misc output ─────────────────────────────────────────────────────────
+*.log
+patch_extractor_sam_checkpoint.json
 
-# ── LaTeX build artefacts ─────────────────────────────────────────────
-docs/*.aux
-docs/*.log
-docs/*.toc
-docs/*.out
-docs/*.bbl
-docs/*.blg
-docs/*.synctex.gz
-docs/*.fls
-docs/*.fdb_latexmk
-
-# ── Notebooks: keep .ipynb but ignore outputs ─────────────────────────
-# (use nbstripout or jupyter nbconvert --clear-output before committing)
+# ── Large image files at root ──────────────────────────────────────────────────
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+18PalmsT200002.jpg
